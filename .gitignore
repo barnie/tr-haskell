@@ -1,0 +1,8 @@
+*.hi
+*.o
+*.swp
+*.*.swp
+test
+text
+main
+tr
