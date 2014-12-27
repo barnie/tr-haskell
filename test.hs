@@ -1,5 +1,5 @@
 import System.Environment
-
+import System.IO (isEOF)
 
 --args function
 version = putStr "version 1.0\nauthor: Piotr Kruk\nemail: piotr@kruk.co\n" 
@@ -20,3 +20,12 @@ main = do
     if args == ["-v"] then version
     else if length(args) == 2 then print (prepareTranslation (head args) (args !! 1) "aabbzzabab")
     else print $ args
+
+
+myLoop = do done <- isEOF
+            if done
+              then putStrLn "Bye!"
+              else do inp <- getLine
+                      putStrLn (inp)
+                      myLoop
+
