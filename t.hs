@@ -40,5 +40,13 @@ helper initialState = do end <- isEOF
                                      putStrLn (prepareTranslation a z linein )
                                      helper(initialState)
 
-transition :: (String, String) -> (String, String)
-transition inpair = (nextState, nextState) where nextState = (snd inpair) ++ (fst inpair)
+checkArgs x [] = []
+checkArgs prev (f:fg) =
+  if f == '-' then
+    [prev..head(fg)] ++ checkArgs (head fg) (drop 1 fg)
+  else if length(fg) > 0 && (head fg) /= '-' then
+     [f] ++ checkArgs f fg
+  else if (length fg) == 0 then
+    [f]
+  else
+    checkArgs f fg
