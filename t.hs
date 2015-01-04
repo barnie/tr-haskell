@@ -50,3 +50,16 @@ checkArgs prev (f:fg) =
     [f]
   else
     checkArgs f fg
+
+replace :: Eq a => [a] -> [a] -> [a] -> [a]
+replace [] _ _ = []
+replace s find repl =
+    if take (length find) s == find
+        then repl ++ (replace (drop (length find) s) find repl)
+        else [head s] ++ (replace (tail s) find repl)
+
+convert_arr_string_to_string [] = []
+convert_arr_string_to_string (f:fx) = (map (\c -> c) f) ++ convert_arr_string_to_string fx
+
+deleter _ [] = []
+deleter x (f:fg) = if x /= f then [f] ++ deleter x fg else deleter x fg

@@ -25,6 +25,25 @@ helper initialState = do end <- isEOF
                                      helper(initialState)
 
 
+replace :: Eq a => [a] -> [a] -> [a] -> [a]
+replace [] _ _ = []
+replace s find repl =
+    if take (length find) s == find
+        then repl ++ (replace (drop (length find) s) find repl)
+        else [head s] ++ (replace (tail s) find repl)
+
+deleter::[Char] -> IO ()
+deleter initialState = do end <- isEOF
+                          if end
+                             then putStr ""
+                             else do linein <- getLine
+                                     putStrLn (replace linein initialState "" )
+                                     deleter(initialState)
+
+
+convert_arr_string_to_string [] = []
+convert_arr_string_to_string (f:fx) = (map (\c -> c) f) ++ convert_arr_string_to_string fx
+
 checkArgs x [] = []
 checkArgs prev (f:fg) =
   if f == '-' then
@@ -39,13 +58,6 @@ checkArgs prev (f:fg) =
 main = do
     args <- getArgs
     if args == ["-v"] then version
+    else if head (args) == "-d" then deleter (convert_arr_string_to_string(tail args))
     else if length(args) == 2 then (helper args)
     else print $ args
-
-
-myLoop = do done <- isEOF
-            if done
-              then putStrLn "Bye!"
-              else do inp <- getLine
-                      putStrLn (inp)
-                      myLoop
