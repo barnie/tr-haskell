@@ -61,3 +61,12 @@ convert_arr_string_to_string (f:fx) = (map (\c -> c) f) ++ convert_arr_string_to
 
 deleter _ [] = []
 deleter x (f:fg) = if x /= f then [f] ++ deleter x fg else deleter x fg
+
+if_exist [] _ = False
+if_exist (f:fg) x = if (f == x) then True else if_exist fg x
+
+-- (f:fg) <- set to change, replace-character to replace, s dictionar of banned word
+light_remove [] _ _= []
+light_remove (f:fg) replace s = if (if_exist s f) == True then
+                                [f] ++ light_remove fg replace s else
+                                [replace] ++ light_remove fg replace s
