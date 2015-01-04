@@ -25,6 +25,17 @@ helper initialState = do end <- isEOF
                                      helper(initialState)
 
 
+checkArgs x [] = []
+checkArgs prev (f:fg) =
+  if f == '-' then
+    [prev..head(fg)] ++ checkArgs (head fg) (drop 1 fg)
+  else if length(fg) > 0 && (head fg) /= '-' then
+     [f] ++ checkArgs f fg
+  else if (length fg) == 0 then
+    [f]
+  else
+    checkArgs f fg
+
 replace :: Eq a => [a] -> [a] -> [a] -> [a]
 replace [] _ _ = []
 replace s find repl =
@@ -44,20 +55,23 @@ deleter initialState = do end <- isEOF
 convert_arr_string_to_string [] = []
 convert_arr_string_to_string (f:fx) = (map (\c -> c) f) ++ convert_arr_string_to_string fx
 
-checkArgs x [] = []
-checkArgs prev (f:fg) =
-  if f == '-' then
-    [prev..head(fg)] ++ checkArgs (head fg) (drop 1 fg)
-  else if length(fg) > 0 && (head fg) /= '-' then
-     [f] ++ checkArgs f fg
-  else if (length fg) == 0 then
-    [f]
-  else
-    checkArgs f fg
+replaceS [] x counter = []
+replaceS (f:fg) x counter = if f == x && counter == 1 then [f] ++ replaceS fg x 0
+                            else if f == x && counter == 0 then replaceS fg x 0
+                            else [f] ++ replaceS fg x 1
+
+remove1::Char -> IO ()
+remove1 initialState = do end <- isEOF
+                          if end
+                             then putStr ""
+                             else do linein <- getLine
+                                     putStrLn (replaceS linein initialState 1 )
+                                     remove1(initialState)
 
 main = do
     args <- getArgs
     if args == ["-v"] then version
     else if head (args) == "-d" then deleter (convert_arr_string_to_string(tail args))
+    else if head (args) == "-s" then remove1 (head (convert_arr_string_to_string(tail args)))
     else if length(args) == 2 then (helper args)
     else print $ args

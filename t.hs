@@ -51,12 +51,10 @@ checkArgs prev (f:fg) =
   else
     checkArgs f fg
 
-replace :: Eq a => [a] -> [a] -> [a] -> [a]
-replace [] _ _ = []
-replace s find repl =
-    if take (length find) s == find
-        then repl ++ (replace (drop (length find) s) find repl)
-        else [head s] ++ (replace (tail s) find repl)
+replaceS [] x counter = []
+replaceS (f:fg) x counter = if f == x && counter == 1 then [f] ++ replaceS fg x 0
+                            else if f == x && counter == 0 then replaceS fg x 0
+                            else [f] ++ replaceS fg x 1
 
 convert_arr_string_to_string [] = []
 convert_arr_string_to_string (f:fx) = (map (\c -> c) f) ++ convert_arr_string_to_string fx
