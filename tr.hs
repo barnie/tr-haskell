@@ -97,6 +97,6 @@ main = do
     if args == ["-v"] then version
     else if head (args) == "-d" then deleter (convert_arr_string_to_string(tail args))
     else if head (args) == "-s" then remove1 (head (convert_arr_string_to_string(tail args)))
-    else if head (args) == "-c" then complet ([args !! 1, args !! 2], "")
+    else if head (args) == "-c" || head(args) == "-C" then complet ([args !! 1, args !! 2], "")
     else if length(args) == 2 then (helper args)
     else print $ args
