@@ -25,8 +25,8 @@ helper initialState = do end <- isEOF
                          if end
                              then putStr ""
                              else do linein <- getLine
-                                     let a =checkDic ( cutit (show (initialState!! 0)) )
-                                     let z =checkDic ( cutit (show (initialState !! 1)) )
+                                     let a = ( cutit (show (initialState!! 0)) )
+                                     let z = ( cutit (show (initialState !! 1)) )
                                      putStrLn ((prepareTranslation a z linein) )
                                      helper(initialState)
 --get last element from list
@@ -112,16 +112,14 @@ light_remove (f:fg) replace s = if (if_exist s f) == True then
                                 [f] ++ light_remove fg replace s else
                                 [replace] ++ light_remove fg replace s
 
-
--- complete flag
 complet::([String], [Char]) -> IO ()
 complet initialState = do end <- isEOF
+                          let args = fst (initialState)
+                          let dictionary = head (args)
+                          let replace =  (listLast(args !! 1))
                           if end
-                             then putStr (snd initialState)
+                             then putStr ((snd initialState) ++ [replace])
                              else do linein <- getLine
-                                     let args = fst (initialState)
-                                     let dictionary = head (args)
-                                     let replace = head(args !! 1)
                                      let result = light_remove linein replace dictionary
                                      let z = (snd initialState) ++ result
                                      complet(args, z)
