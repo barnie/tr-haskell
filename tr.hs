@@ -9,6 +9,11 @@ version = putStr "version 1.0\nauthor: Piotr Kruk\nemail: piotr@kruk.co\n"
 ifExist x [] = []
 ifExist x (f:fg) = if ( x == (fst f)) then [f] else ifExist x fg
 
+
+--check if character exist in set
+if_exist [] _ = False
+if_exist (f:fg) x = if (f == x) then True else if_exist fg x
+
 translate _ [] = []
 translate ds (f:fg) = if (null (ifExist f ds)) == True then [f] ++ (translate ds fg) else [ ( snd (head (ifExist f ds)) ) ] ++ (translate ds fg)
 
@@ -66,13 +71,13 @@ checkArgs prev (f:fg) =
     checkArgs f fg
 
 --replace
-replace :: Eq a => [a] -> [a] -> [a] -> [a]
-replace [] _ _ = []
-replace s find repl =
-    if take (length find) s == find
-        then repl ++ (replace (drop (length find) s) find repl)
-        else [head s] ++ (replace (tail s) find repl)
-
+replace::(Eq a)=>[a]->[a]->[a]
+replace [] _  = []
+replace (s:sg) find  =
+    if  (if_exist find s)  == True then
+      replace sg find
+    else
+      [s] ++ replace sg find
 
 --remove all characters
 deleter::[Char] -> IO ()
@@ -80,7 +85,7 @@ deleter initialState = do end <- isEOF
                           if end
                              then putStr ""
                              else do linein <- getLine
-                                     putStrLn (replace linein initialState "" )
+                                     putStrLn (replace linein initialState )
                                      deleter(initialState)
 
 --convert string to [array]
@@ -101,9 +106,6 @@ remove1 initialState = do end <- isEOF
                                      putStrLn (replaceS linein initialState 1 )
                                      remove1(initialState)
 
---check if character exist in set
-if_exist [] _ = False
-if_exist (f:fg) x = if (f == x) then True else if_exist fg x
 
 -- (f:fg) <- set to change, replace-character to replace, s dictionary of banned word
 light_remove::(Eq a)=>[a] -> a -> [a] -> [a]
