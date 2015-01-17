@@ -25,8 +25,8 @@ helper initialState = do end <- isEOF
                          if end
                              then putStr ""
                              else do linein <- getLine
-                                     let a = cutit (show (initialState!!0))
-                                     let z = cutit (show (initialState !! 1))
+                                     let a =checkDic ( cutit (show (initialState!! 0)) )
+                                     let z =checkDic ( cutit (show (initialState !! 1)) )
                                      putStrLn ((prepareTranslation a z linein) )
                                      helper(initialState)
 --get last element from list
@@ -41,16 +41,17 @@ complete x y = [ listLast x ] ++ (complete x (y - 1))
 --normal translation
 transl ::(Show a, Eq a)=>[a] -> IO ()
 transl initialState = do end <- isEOF
+                         let a = checkDic ( cutit (show (initialState!! 0)) )
+                         let z = checkDic ( cutit (show (initialState !! 1)) )
                          if end
                              then putStr ""
                              else do linein <- getLine
-                                     let a = cutit (show (initialState!!0))
-                                     let z = cutit (show (initialState !! 1))
+                                     putStrLn (show(initialState !! 0))
                                      if (length(a) <= length(z)) then
                                       putStrLn ((prepareTranslation a z linein) )
                                      else
                                       putStrLn ((prepareTranslation ( a ++ ( complete a (length(z) - length(a)) ) ) z linein) )
-                                     helper(initialState)
+                                     transl(initialState)
 
 --chech arguments for dictionary
 checkArgs x [] = []
@@ -111,6 +112,8 @@ light_remove (f:fg) replace s = if (if_exist s f) == True then
                                 [f] ++ light_remove fg replace s else
                                 [replace] ++ light_remove fg replace s
 
+
+-- complete flag
 complet::([String], [Char]) -> IO ()
 complet initialState = do end <- isEOF
                           if end
@@ -124,11 +127,11 @@ complet initialState = do end <- isEOF
                                      complet(args, z)
 
 --dictionaries
-checkDic ":alnum:" = ['a'..'z'] ++ ['A'..'Z'] ++ ['0'..'9']
-checkDic ":alpha:" = ['a'..'z'] ++ ['A'..'Z']
-checkDic ":digit:" = ['0'..'9']
-checkDic ":lower:" = ['a'..'z']
-checkDic ":upper:" = ['A'..'Z']
+checkDic "[:alnum:]" = ['a'..'z'] ++ ['A'..'Z'] ++ ['0'..'9']
+checkDic "[:alpha:]" = ['a'..'z'] ++ ['A'..'Z']
+checkDic "[:digit:]" = ['0'..'9']
+checkDic "[:lower:]" = ['a'..'z']
+checkDic "[:upper:]" = ['A'..'Z']
 checkDic x = x
 
 main = do
