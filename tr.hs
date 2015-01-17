@@ -169,9 +169,9 @@ main
   = do args <- getArgs
        if args == ["-v"] then version else
          if head (args) == "-t" then (helper (tail args)) else
-           if head (args) == "-d" then
+           if head (args) == "-d" && length(args) == 2 then
              deleter (convert_arr_string_to_string (tail args)) else
              if head (args) == "-s" then remove1 (tail args) else
                if head (args) == "-c" || head (args) == "-C" then
                  complet ([args !! 1, args !! 2], "") else
-                 if length (args) == 2 then (transl args) else print $ args
+                 if length (args) == 2 then (transl args) else putStrLn ("Please read a tr man, because you send wrong args")
