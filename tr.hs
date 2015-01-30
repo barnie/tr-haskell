@@ -130,10 +130,10 @@ remove1 initialState
          do linein <- getLine
             let a = (cutit (show (initialState !! 0)))
             let result = (replaceS linein a 1 " ")
-            if (tail initialState) == [] then
-              putStrLn( result)
+            if (length initialState) == 1 then
+              putStrLn( result  )
             else
-              putStrLn((prepareTranslation a  (cutit (show (initialState !! 1))) result))
+              putStrLn(replaceS (prepareTranslation a (initialState !! 1) linein) (initialState !! 1) 1 " " )
             remove1 (initialState)
 
 
@@ -167,6 +167,9 @@ checkDic "[:lower:]" = ['a' .. 'z']
 checkDic "[:upper:]" = ['A' .. 'Z']
 checkDic "[:space:]" = " "
 checkDic "\\n" = "\n"
+checkDic "[0-9]" = ['0' .. '9']
+checkDic "[a-z]" = ['a'..'z']
+checkDic "[A-Z]" = ['A' .. 'Z']
 checkDic x = x
 
 compare1::(String, String)->String
@@ -176,15 +179,19 @@ prepare ::  [String] -> [String]
 prepare args =
   [checkDic (args !! 0), checkDic(args !! 1) ++ (multiple ( ( length (checkDic (args !! 0)) ) - ( length (checkDic (args !! 1)) ) ) (last(checkDic (args !! 1)) ))]
 
+prepare1 ::[String] -> [String]
+prepare1 args = if (length args) > 1 then prepare args else [checkDic(args !! 0)]
+
 main
   = do args <- getArgs
        if args == ["-v"] then version else
+        if args == ["-h"] then man else
          if head (args) == "-t" then (helper (tail args)) else
            if head (args) == "-d" && length(args) == 2 then
-             deleter (convert_arr_string_to_string (tail args)) else
-             if head (args) == "-s" then remove1 (tail args) else
+             deleter (checkDic(convert_arr_string_to_string (tail args)))else
+             if head (args) == "-s" then remove1 (prepare1(tail args)) else
                if head (args) == "-c" || head (args) == "-C" then
-                 complet ([args !! 1, args !! 2], "") else
+                 complet ([checkDic(args !! 1), args !! 2], "") else
                  if length (args) == 2 then
                   transl ( prepare(args) )
                    else man
