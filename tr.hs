@@ -167,6 +167,7 @@ checkDic "[:lower:]" = ['a' .. 'z']
 checkDic "[:upper:]" = ['A' .. 'Z']
 checkDic "[:space:]" = " "
 checkDic "\\n" = "\n"
+checkDic "\n" = "\n"
 checkDic "[0-9]" = ['0' .. '9']
 checkDic "[a-z]" = ['a'..'z']
 checkDic "[A-Z]" = ['A' .. 'Z']
@@ -186,7 +187,7 @@ main
   = do args <- getArgs
        if args == ["-v"] then version else
         if args == ["-h"] then man else
-         if head (args) == "-t" then (helper (tail args)) else
+         if head (args) == "-t" then (helper (prepare(tail args))) else
            if head (args) == "-d" && length(args) == 2 then
              deleter (checkDic(convert_arr_string_to_string (tail args)))else
              if head (args) == "-s" then remove1 (prepare1(tail args)) else
