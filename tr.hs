@@ -5,6 +5,8 @@ import System.IO (isEOF)
 version
   = putStr "version 1.0\nauthor: Piotr Kruk\nemail: piotr@kruk.co\n"
 
+man
+  = putStr "The same like linux man tr, except dictionaries i support only : alnum, alpha, upper,digit,space, \" \\n \" "
 
 --check if element exist in list and return this element
 ifExist x [] = []
@@ -57,21 +59,22 @@ complete :: (Eq b, Num b) => [a] -> b -> [a]
 complete _ 0 = []
 complete x y = [listLast x] ++ (complete x (y - 1))
 
+splitAt' = \n -> \xs -> (take n xs, drop n xs)
+
+multiple 0 _ = []
+multiple n x = [x] ++ multiple (n-1) x
+
+transform x = (snd (splitAt' (length (snd x)) (fst x)))
 
 --Normal translation
-transl :: (Show a, Eq a) => [a] -> IO ()
+transl ::  [String] -> IO ()
 transl initialState
   = do end <- isEOF
-       let a = checkDic (cutit (show (initialState !! 0)))
-       let z = checkDic (cutit (show (initialState !! 1)))
+       let a = (initialState !! 0)
+       let z = (initialState !! 1)
        if end then putStr "" else
          do linein <- getLine
-            if (length (a) <= length (z)) then
-              putStrLn ((prepareTranslation a z linein)) else
-              putStrLn
-                ((prepareTranslation (a ++ (complete a (length (z) - length (a))))
-                    z
-                    linein))
+            putStrLn ((prepareTranslation a z linein))
             transl (initialState)
 
 
@@ -162,8 +165,16 @@ checkDic "[:alpha:]" = ['a' .. 'z'] ++ ['A' .. 'Z']
 checkDic "[:digit:]" = ['0' .. '9']
 checkDic "[:lower:]" = ['a' .. 'z']
 checkDic "[:upper:]" = ['A' .. 'Z']
+checkDic "[:space:]" = " "
+checkDic "\\n" = "\n"
 checkDic x = x
 
+compare1::(String, String)->String
+compare1 x = if length(fst x) > length(snd x) then (snd x) ++ (snd (splitAt' (length (snd x)) (fst x)) ) else snd x
+
+prepare ::  [String] -> [String]
+prepare args =
+  [checkDic (args !! 0), checkDic(args !! 1) ++ (multiple ( ( length (checkDic (args !! 0)) ) - ( length (checkDic (args !! 1)) ) ) (last(checkDic (args !! 1)) ))]
 
 main
   = do args <- getArgs
@@ -174,4 +185,6 @@ main
              if head (args) == "-s" then remove1 (tail args) else
                if head (args) == "-c" || head (args) == "-C" then
                  complet ([args !! 1, args !! 2], "") else
-                 if length (args) == 2 then (transl args) else putStrLn ("Please read a tr man, because you send wrong args")
+                 if length (args) == 2 then
+                  transl ( prepare(args) )
+                   else man
